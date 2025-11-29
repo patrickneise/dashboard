@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	templates "github.com/patrickneise/dashboard/internal/templates/widgets"
+	templates "github.com/patrickneise/dashboard/internal/templates"
 	"github.com/patrickneise/dashboard/internal/widgets"
 )
 

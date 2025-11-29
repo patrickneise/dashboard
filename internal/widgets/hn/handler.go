@@ -9,8 +9,8 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/patrickneise/dashboard/internal/cache"
-	templates "github.com/patrickneise/dashboard/internal/templates/widgets"
-	"github.com/patrickneise/dashboard/internal/widgets/framework"
+	"github.com/patrickneise/dashboard/internal/templates"
+	"github.com/patrickneise/dashboard/internal/widget"
 )
 
 type Options struct {
@@ -41,7 +41,7 @@ func NewWidgetHandler(opts Options) http.Handler {
 		opts.Client = NewClient(nil)
 	}
 
-	return framework.Handler[WidgetViewModel]{
+	return widget.Handler[WidgetViewModel]{
 		Name:  "hn",
 		TTL:   ttl,
 		Cache: &cache.TTL[WidgetViewModel]{},
