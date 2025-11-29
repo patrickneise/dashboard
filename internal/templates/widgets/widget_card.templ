@@ -1,0 +1,48 @@
+package widgets
+
+type WidgetCardProps struct {
+	Title    string
+	Endpoint string
+
+	// Optional behavior knobs (nice defaults)
+	Trigger  string // default: "load"
+	Swap     string // default: "innerHTML"
+	Target   string // default: "this"
+
+	// Optional: allow passing extra classes for layout tweaks
+	Class string // appended to base card class
+}
+
+templ WidgetCard(p WidgetCardProps) {
+	<div
+		class={ "bg-white rounded-xl shadow p-4 " + p.Class }
+		hx-get={ p.Endpoint }
+		hx-trigger={ orDefault(p.Trigger, "load") }
+		hx-target={ orDefault(p.Target, "this") }
+		hx-swap={ orDefault(p.Swap, "innerHTML") }
+	>
+		@WidgetCardSkeleton(p.Title)
+	</div>
+}
+
+templ WidgetCardSkeleton(title string) {
+	<div class="animate-pulse space-y-3">
+		<div class="flex items-center justify-between">
+			<div class="h-4 bg-gray-200 rounded w-1/2"></div>
+			<div class="h-3 bg-gray-200 rounded w-1/4"></div>
+		</div>
+
+		<div class="space-y-2">
+			<div class="h-3 bg-gray-200 rounded w-full"></div>
+			<div class="h-3 bg-gray-200 rounded w-5/6"></div>
+			<div class="h-3 bg-gray-200 rounded w-2/3"></div>
+		</div>
+	</div>
+}
+
+func orDefault(v string, def string) string {
+	if v == "" {
+		return def
+	}
+	return v
+}

@@ -1,0 +1,33 @@
+
+live-init: build
+	@echo "Applying database migrations..."
+	@$(MAKE) migrate-up
+	@echo "Running one-time sync..."
+	@./tmp/app worker --run-once
+
+
+live/sqlc:
+	@echo "[LIVE] Starting air sqlc watcher..."
+	@go run github.com/air-verse/air@v$(AIR_VERSION) \
+	--build.cmd "sqlc generate" \
+	--build.bin "/bin/true" \
+	--build.delay "100" \
+	--build.exclude_dir "${TMP_DIR},${STATIC_DIR},vendor" \
+	--build.include_dir "internal/store,migrations" \
+	--build.include_ext "sql" \
+	--misc.clean_on_exit true
+
+# DATABASE
+# Usage: make migrate-create name=create_users_table
+migrate-create:
+	@if [ -z "$(name)" ]; then echo "ERROR: 'name' is not set"; exit 1; fi
+	@echo "Creating migration: $(name)"
+	@migrate create -ext sql -dir migrations -seq $(name)
+
+
+# Applies all 'up' migrations
+migrate-up:
+	@echo "Applying migrations to dev.db..."
+	@migrate -database "sqlite://dev.db" -path migrations up
+
+

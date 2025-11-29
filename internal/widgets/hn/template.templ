@@ -1,0 +1,46 @@
+package hn
+
+templ HackerNewsWidgetView(data WidgetViewModel) {
+	<div class="space-y-3">
+		<div class="flex items-center justify-between">
+			<div class="flex items-center gap-2">
+				<h2 class="text-lg font-semibold">Hacker News</h2>
+				if data.IsStale {
+					<span class="text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-900 border border-yellow-200">
+						Stale ({ data.StaleBy })
+					</span>
+				}
+			</div>
+			<p class="text-sm text-gray-500">Updated { data.UpdatedAt }</p>
+		</div>
+
+		<ol class="space-y-2">
+			for _, e := range data.Entries {
+				<li class="flex gap-2">
+					<div class="w-7 text-right text-gray-400">{ e.Rank }.</div>
+
+					<div class="min-w-0 flex-1">
+						<div class="flex items-baseline gap-2 min-w-0">
+							<a
+								class="font-medium text-gray-900 hover:underline truncate"
+								href={ e.URL }
+								target="_blank"
+								rel="noreferrer"
+							>
+								{ e.Title }
+							</a>
+
+							if e.Domain != "" {
+								<span class="text-xs text-gray-500 shrink-0">({ e.Domain })</span>
+							}
+						</div>
+
+						<div class="text-xs text-gray-500">
+							{ e.Score } points · by { e.By } · { e.Age } ago · { e.Comments } comments
+						</div>
+					</div>
+				</li>
+			}
+		</ol>
+	</div>
+}

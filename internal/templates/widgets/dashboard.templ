@@ -1,0 +1,19 @@
+package widgets
+
+// Internal helper for the main dashboard content.
+templ dashboardContents(cards []WidgetCardProps) {
+	<div class="space-y-6">
+		<h1 class="text-2xl font-semibold">Personal Dashboard</h1>
+
+		<div class="grid gap-4 md:grid-cols-2">
+			for _, c := range cards {
+				@WidgetCard(c)
+			}
+		</div>
+	</div>
+}
+
+// Exported page component used by the HTTP handler.
+templ DashboardPage(cards []WidgetCardProps) {
+	@BaseLayout("Personal Dashboard", dashboardContents(cards))
+}

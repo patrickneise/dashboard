@@ -1,0 +1,50 @@
+// README at: https://github.com/devcontainers/templates/tree/main/src/go .
+{
+    "name": "dashboard",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                // --- Core Go ---
+                "golang.Go",
+                // --- Stack Tools ---
+                "a-h.templ",
+                "bradlc.vscode-tailwindcss",
+                "mde.vscode-htmx",
+                // --- Database ---
+                "alexcvzz.vscode-sqlite",
+                // --- Utilities ---
+                "esbenp.prettier-vscode",
+                "eamodio.gitlens",
+                "ms-vscode.makefile-tools",
+                "davidanson.vscode-markdownlint"
+            ],
+            "settings": {
+                "go.useLanguageServer": true,
+                "go.formatTool": "gofmt",
+                "go.toolsManagement.autoUpdate": true,
+                "editor.formatOnSave": true,
+                "files.eol": "\n",
+                "templ.format.enable": true,
+                "files.associations": {
+                    "*.templ": "templ"
+                },
+                "emmet.includeLanguages": {
+                    "templ": "html"
+                },
+                "tailwindCSS.includeLanguages": {
+                    "templ": "html"
+                },
+                "files.exclude": {
+                    "**/*_templ.go": true
+                },
+                "search.exclude": {
+                    "**/*_templ.go": true
+                }
+            }
+        }
+    },
+    "postCreateCommand": "go mod download"
+}
