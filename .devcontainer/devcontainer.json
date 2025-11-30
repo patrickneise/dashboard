@@ -9,6 +9,7 @@
             "extensions": [
                 // --- Core Go ---
                 "golang.Go",
+                "golangci.golangci-lint",
                 // --- Stack Tools ---
                 "a-h.templ",
                 "bradlc.vscode-tailwindcss",
@@ -22,10 +23,22 @@
                 "davidanson.vscode-markdownlint"
             ],
             "settings": {
+                // go
                 "go.useLanguageServer": true,
                 "go.formatTool": "gofmt",
                 "go.toolsManagement.autoUpdate": true,
+                "go.lintTool": "golangci-lint",
+                "go.lintOnSave": "package",
+                "go.vetOnSave": "package",
+                "go.testOnSave": false,
+                "gopls": {
+                    "ui.semanticTokens": true,
+                    "staticcheck": false
+                },
+                "[go]": { "editor.defaultFormatter": "golang.go" },
+                // editor
                 "editor.formatOnSave": true,
+                "editor.defaultFormatter": "golang.go",
                 "files.eol": "\n",
                 "templ.format.enable": true,
                 "files.associations": {
@@ -38,13 +51,20 @@
                     "templ": "html"
                 },
                 "files.exclude": {
-                    "**/*_templ.go": true
+                    "**/*_templ.go": true,
+                    "**/tmp/**": true
                 },
                 "search.exclude": {
-                    "**/*_templ.go": true
-                }
+                    "**/*_templ.go": true,
+                    "**/tmp/**": true,
+                    "**/static/css/output.css": true
+                },
+                "[templ]": { "editor.defaultFormatter": "a-h.templ" },
+                "prettier.enable": false,
+                "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+                "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" }
             }
         }
     },
-    "postCreateCommand": "go mod download"
+    "postCreateCommand": "go mod download && templ generate ./... && make css"
 }

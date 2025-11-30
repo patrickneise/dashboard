@@ -1,0 +1,5 @@
+run:
+  tests: true
+  timeout: 3m
+  skip-files:
+    - '.*_templ\.go$'
