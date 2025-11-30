@@ -25,9 +25,12 @@
 go.work
 
 # Generated templ files
-*_templ.go
+**/*_templ.go
 
 # Generated CSS
-output.css
+static/css/output.css
+
+# Temp build folder
+tmp/
 
 # End of https://www.toptal.com/developers/gitignore/api/go

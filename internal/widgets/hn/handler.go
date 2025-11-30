@@ -9,8 +9,8 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/patrickneise/dashboard/internal/cache"
-	"github.com/patrickneise/dashboard/internal/templates"
-	"github.com/patrickneise/dashboard/internal/widget"
+	"github.com/patrickneise/dashboard/internal/ui/components"
+	"github.com/patrickneise/dashboard/internal/widgetkit"
 )
 
 type Options struct {
@@ -41,7 +41,7 @@ func NewWidgetHandler(opts Options) http.Handler {
 		opts.Client = NewClient(nil)
 	}
 
-	return widget.Handler[WidgetViewModel]{
+	return widgetkit.Handler[WidgetViewModel]{
 		Name:  "hn",
 		TTL:   ttl,
 		Cache: &cache.TTL[WidgetViewModel]{},
@@ -104,7 +104,7 @@ func NewWidgetHandler(opts Options) http.Handler {
 		},
 
 		Error: func(_ error) templ.Component {
-			return templates.WidgetError("Hacker News", "/widgets/hn")
+			return components.WidgetError("Hacker News", "/widgets/hn")
 		},
 
 		MarkStale: func(vm WidgetViewModel, staleBy time.Duration) WidgetViewModel {

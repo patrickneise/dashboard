@@ -5,11 +5,12 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	templates "github.com/patrickneise/dashboard/internal/templates"
-	"github.com/patrickneise/dashboard/internal/widgets"
+	"github.com/patrickneise/dashboard/internal/ui/components"
+	"github.com/patrickneise/dashboard/internal/ui/pages"
+	"github.com/patrickneise/dashboard/internal/widgetkit"
 )
 
-func RegisterRoutes(r chi.Router, reg *widgets.Registry) {
+func RegisterRoutes(r chi.Router, reg *widgetkit.Registry) {
 	if reg == nil {
 		panic("server.RegisterRoutes: registry is nil")
 	}
@@ -19,9 +20,9 @@ func RegisterRoutes(r chi.Router, reg *widgets.Registry) {
 
 	// Build dashboard cards once (registry is startup-time config)
 	specs := reg.List()
-	cards := make([]templates.WidgetCardProps, 0, len(specs))
+	cards := make([]components.WidgetCardProps, 0, len(specs))
 	for _, s := range specs {
-		cards = append(cards, templates.WidgetCardProps{
+		cards = append(cards, components.WidgetCardProps{
 			Title:    s.Title,
 			Endpoint: "/widgets/" + s.Key,
 			Trigger:  s.Trigger,
@@ -30,7 +31,7 @@ func RegisterRoutes(r chi.Router, reg *widgets.Registry) {
 	}
 
 	r.Get("/", func(w http.ResponseWriter, req *http.Request) {
-		component := templates.DashboardPage(cards)
+		component := pages.DashboardPage(cards)
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		if err := component.Render(req.Context(), w); err != nil {
 			http.Error(w, "render error", http.StatusInternalServerError)

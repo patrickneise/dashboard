@@ -13,15 +13,15 @@ gen:
 	@templ generate ./...
 
 css:
-	@mkdir -p $(STATIC_DIR)
-	@tailwindcss -i ./input.css -o ./$(STATIC_DIR)/output.css --minify
+	@mkdir -p $(STATIC_DIR)/css
+	@tailwindcss -i ./web/css/input.css -o ./$(STATIC_DIR)/css/output.css --minify
 
 # UI DEVELOPMENT
 # run templ generation in watch mode to detect all .templ files and
 # recreate files on change, then send reload event to browser
 # start all 4 watch processes in parallel
 live:
-	@mkdir -p $(TMP_DIR) $(STATIC_DIR)
+	@mkdir -p $(TMP_DIR) $(STATIC_DIR)/css
 	@echo "Starting full hot-reload environment"
 	@$(MAKE) -j4 live/templ live/tailwind live/server live/sync_assets
 
@@ -46,7 +46,7 @@ live/server:
 live/tailwind:
 	@echo "[LIVE] Starting tailwindcss watcher..."
 	@mkdir -p $(STATIC_DIR)
-	@tailwindcss -i ./input.css -o ./$(STATIC_DIR)/output.css --minify --watch=always
+	@tailwindcss -i ./web/css/input.css -o ./$(STATIC_DIR)/css/output.css --minify --watch=always
 
 
 # watch for any js or css changes in the static/ folder, then reload browswer via templ proxy

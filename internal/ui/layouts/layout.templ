@@ -1,4 +1,4 @@
-package templates
+package layouts
 
 // BaseLayout accepts a title and a child component.
 templ BaseLayout(title string, body templ.Component) {
@@ -8,8 +8,8 @@ templ BaseLayout(title string, body templ.Component) {
 			<meta charset="utf-8" />
 			<title>{ title }</title>
 			<meta name="viewport" content="width=device-width, initial-scale=1" />
-			<script src="https://unpkg.com/htmx.org@2.0.2"></script>
-			<link rel="stylesheet" href="/static/output.css" />
+			<script src="/static/js/htmx.min.js"></script>
+			<link rel="stylesheet" href="/static/css/output.css" />
 		</head>
 		<body class="bg-gray-100 text-gray-900 min-h-screen">
 			<div class="max-w-4xl mx-auto px-4 py-8">

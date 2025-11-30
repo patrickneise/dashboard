@@ -10,25 +10,20 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-
+	"github.com/patrickneise/dashboard/internal/app"
 	"github.com/patrickneise/dashboard/internal/config"
-	"github.com/patrickneise/dashboard/internal/httpx"
 	"github.com/patrickneise/dashboard/internal/logging"
-	"github.com/patrickneise/dashboard/internal/server"
-	"github.com/patrickneise/dashboard/internal/widgets"
-	"github.com/patrickneise/dashboard/internal/widgets/hn"
-	"github.com/patrickneise/dashboard/internal/widgets/weather"
 )
 
 func main() {
+	// Load Config
 	cfg, err := config.Load()
 	if err != nil {
 		slog.Error("config_error", slog.Any("err", err))
 		os.Exit(1)
 	}
 
+	// Setup Logging
 	mode := logging.ModeDev
 	if cfg.Env == "prod" {
 		mode = logging.ModeProd
@@ -36,63 +31,25 @@ func main() {
 	log := logging.New(mode)
 	slog.SetDefault(log)
 
-	r := chi.NewRouter()
-	// Core middleware (order matters)
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(middleware.Recoverer)
-	// Optional but usefull
-	r.Use(middleware.Compress(5))
-	r.Use(middleware.Timeout(30 * time.Second))
-	// Security
-	r.Use(server.SecurityHeaders)
-	// Request Logger
-	r.Use(logging.RequestLogger(log))
+	// Build App
+	a, err := app.Build(cfg, log)
+	if err != nil {
+		log.Error("app_build_failed", slog.Any("err", err))
+		os.Exit(1)
+	}
 
-	sharedHTTP := httpx.New("dashboard/0.1")
-	sharedHTTP.Retries = 2
-	sharedHTTP.Backoff = 250 * time.Millisecond
-
-	weatherWidget := weather.NewWidgetHander(weather.Options{
-		Lat:          cfg.WeatherLat,
-		Lon:          cfg.WeatherLon,
-		Hours:        cfg.WeatherHours,
-		LocationName: "Annapolis, MD",
-		TTL:          cfg.WidgetTTL,
-		Log:          log,
-		Client:       weather.NewClient(sharedHTTP),
-	})
-
-	hnWidget := hn.NewWidgetHandler(hn.Options{
-		Count:  10,
-		TTL:    cfg.WidgetTTL,
-		Log:    log,
-		Client: hn.NewClient(sharedHTTP),
-	})
-
-	reg := widgets.New()
-	reg.MustAdd(widgets.Spec{
-		Key:     "weather",
-		Title:   "Weather",
-		Handler: weatherWidget,
-	})
-	reg.MustAdd(widgets.Spec{
-		Key:     "hn",
-		Title:   "Hacker News",
-		Handler: hnWidget,
-	})
-	server.RegisterRoutes(r, reg)
-
+	// Configure Server
 	srv := &http.Server{
 		Addr:              cfg.Addr,
-		Handler:           r,
+		Handler:           a.Router,
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       15 * time.Second,
 		WriteTimeout:      30 * time.Second,
 		IdleTimeout:       60 * time.Second,
-		MaxHeaderBytes:    1 << 20, // 1 MiB
+		MaxHeaderBytes:    1 << 20,
 	}
 
+	// Server Start/Stop
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
@@ -124,5 +81,4 @@ func main() {
 	} else {
 		log.Info("server_stopped")
 	}
-
 }

@@ -8,8 +8,8 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/patrickneise/dashboard/internal/cache"
-	"github.com/patrickneise/dashboard/internal/templates"
-	"github.com/patrickneise/dashboard/internal/widget"
+	"github.com/patrickneise/dashboard/internal/ui/components"
+	"github.com/patrickneise/dashboard/internal/widgetkit"
 )
 
 type Options struct {
@@ -23,7 +23,7 @@ type Options struct {
 	Log    *slog.Logger
 }
 
-func NewWidgetHander(opts Options) http.Handler {
+func NewWidgetHandler(opts Options) http.Handler {
 	c := opts.Client
 
 	ttl := opts.TTL
@@ -36,7 +36,7 @@ func NewWidgetHander(opts Options) http.Handler {
 		location = "Weather"
 	}
 
-	return widget.Handler[WidgetViewModel]{
+	return widgetkit.Handler[WidgetViewModel]{
 		Name:  "weather",
 		TTL:   ttl,
 		Cache: &cache.TTL[WidgetViewModel]{},
@@ -58,7 +58,7 @@ func NewWidgetHander(opts Options) http.Handler {
 		},
 
 		Error: func(_ error) templ.Component {
-			return templates.WidgetError("Weather", "/widgets/weather")
+			return components.WidgetError("Weather", "/widgets/weather")
 		},
 
 		MarkStale: func(vm WidgetViewModel, staleBy time.Duration) WidgetViewModel {
@@ -69,7 +69,7 @@ func NewWidgetHander(opts Options) http.Handler {
 	}
 }
 
-func toViewModel(api *openMeteoResponse) WidgetViewModel {
+func toViewModel(api *OpenMeteoResponse) WidgetViewModel {
 	updatedAt := api.Current.Time
 	// Try to parse the ISO8601 time; if it fails, just use the string
 	if t, err := time.Parse(time.RFC3339, api.Current.Time); err == nil {

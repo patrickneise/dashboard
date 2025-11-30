@@ -1,4 +1,4 @@
-package widgets
+package widgetkit
 
 import (
 	"fmt"
@@ -22,7 +22,7 @@ type Registry struct {
 	byKey map[string]Spec
 }
 
-func New() *Registry {
+func NewRegistry() *Registry {
 	return &Registry{
 		order: make([]Spec, 0, 8),
 		byKey: make(map[string]Spec),
